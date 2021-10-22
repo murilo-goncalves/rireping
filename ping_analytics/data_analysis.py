@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
-import mpld3
 from ping_buffer import PingThread
 from time import sleep
 
