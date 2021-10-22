@@ -19,7 +19,7 @@ class PingThread(threading.Thread):
         time_m = re.search(r'time=[^ ]*', ping_string)
 
         if time_m is None: # ping failed
-            return -1
+            return 0
  
         numeric_ping_m = re.search(r'[0-9]+\.[0-9]+', time_m.group())
 

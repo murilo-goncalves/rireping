@@ -4,7 +4,7 @@ import numpy as np
 from ping_buffer import PingThread
 from time import sleep
 
-BUFFER_SIZE = 10
+BUFFER_SIZE = 100
 
 ping_buffer = [np.nan for _ in range(BUFFER_SIZE)]
 
@@ -28,6 +28,8 @@ line, = ax.plot(x,y)
 #     return line,
 
 # ani = animation.FuncAnimation(fig, animate, init_func=init, interval=5, blit=True, save_count=10)
+
+# plt.show()
 
 while True:
     y = ping_buffer
