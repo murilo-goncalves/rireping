@@ -1,6 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, stream_with_context, render_template_string
 from ping_analytics.ping_buffer import PingThread
-import pygal
+from time import sleep
 
 app = Flask(__name__)
 
@@ -10,14 +10,17 @@ ping_buffer = [0 for _ in range(BUFFER_SIZE)]
 @app.route('/')
 def index():
     try: 
-        pt = PingThread(ping_buffer, BUFFER_SIZE)
-        pt.start()
-        ping_chart = pygal.Line()
-        ping_chart.title = "Rirep's ping"
-        ping_chart.x_labels = map(str, range(10))
-        ping_chart.y_labels = range(0, 100, 10)
-        ping_chart.add('Ping', ping_buffer)
-        ping_chart_data = ping_chart.render_data_uri()
-        return render_template('index.html', ping_chart_data=ping_chart_data)
+        return render_template('index.html')
     except Exception as e:
         return str(e)
+
+@app.route("/stream")
+def stream():
+    tp = PingThread(ping_buffer, BUFFER_SIZE)
+    tp.start()
+    def get_latest_ping():
+        while True:
+            yield str(ping_buffer[BUFFER_SIZE-1]) + " "
+            sleep(1)
+
+    return app.response_class(get_latest_ping(), mimetype="text/plain")

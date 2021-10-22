@@ -6,23 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <meta http-equiv="refresh" content="1" /> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <title>Rireping</title>
   </head>
   <body>
-    <div id="ping">
-      <embed
-        type="image/svg+xml"
-        src="{{ping_chart_data|safe}}"
-        style="max-width: 1000px"
-      />
-    </div>
+      <div>
+        <p>This is the latest output: <span id="output"></span></p>
+    <div/>
   </body>
 </html>
 
+
+<pre id="output"></pre>
 <script>
-  jQuery(document).ready(function () {
-    setInterval(function () {
-      $("#ping").load(location.href + " #ping");
-    }, 500);
-  });
+    var output = document.getElementById('output');
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{{ url_for('stream') }}');
+    xhr.send();
+
+    setInterval(function() {
+        output.textContent = xhr.responseText;
+    }, 1000);
+
+
 </script>
+
+
