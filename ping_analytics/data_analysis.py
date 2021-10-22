@@ -32,7 +32,7 @@ line, = ax.plot(x,y)
 while True:
     y = ping_buffer
     line.set_ydata(y)
-    plt.savefig("teste.png")
+    plt.savefig('teste.png')
     sleep(1)
 
 
