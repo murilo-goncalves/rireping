@@ -17,7 +17,7 @@ y = ping_buffer
 
 fig, ax = plt.subplots()
 ax.set_xlim(-BUFFER_SIZE / 2, BUFFER_SIZE / 2)
-ax.set_ylim(0, 300)
+ax.set_ylim(0, 100)
 line, = ax.plot(x,y)
 
 # def init():  # give a clean slate to start
@@ -34,7 +34,7 @@ while True:
     y = ping_buffer
     line.set_ydata(y)
     plt.savefig("teste.png")
-    sleep(1 / 10)
+    sleep(1)
 
 
 
