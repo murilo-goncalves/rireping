@@ -5,7 +5,7 @@ import pygal
 app = Flask(__name__)
 
 BUFFER_SIZE = 10
-ping_buffer = [2 for _ in range(BUFFER_SIZE)]
+ping_buffer = [0 for _ in range(BUFFER_SIZE)]
 
 @app.route('/')
 def index():

@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="refresh" content="1" />
+    <!-- <meta http-equiv="refresh" content="1" /> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>Rireping</title>
   </head>
   <body>
-    <div>
+    <div id="ping">
       <embed
-        id="ping"
         type="image/svg+xml"
         src="{{ping_chart_data|safe}}"
         style="max-width: 1000px"
@@ -20,8 +20,9 @@
 </html>
 
 <script>
-  jQuery(document).ready(function ($) {
-    $("ping").attr("src", "{{ping_chart_data|safe}}");
-    setTimeout(10);
+  jQuery(document).ready(function () {
+    setInterval(function () {
+      $("#ping").load(location.href + " #ping");
+    }, 500);
   });
 </script>
