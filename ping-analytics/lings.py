@@ -1,32 +1,67 @@
-import matplotlib.pyplot as plt, mpld3
-from threading import Thread
+import matplotlib.pyplot as plt
+import mpld3
+import threading
 from subprocess import call, run, PIPE
+import re
 
 # TODO: IMPLEMENTAR LOCKS PARA ARQUIVO
 
-def get_pings():
-    rc = call("./get_pings.sh")
+class PingThread(threading.Thread):
+    __ping_cmd = "ping 151.101.194.167 -c 1"
 
-def get_file_length():
-    command = "wc -l ./pings.dat"
-    c = command.split()
-    result = run(c, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    print(int(result.stdout.split()[0]))
-    return int(result.stdout.split()[0])
+    def __init__(self, ping_buffer, buffer_size):
+        threading.Thread.__init__(self)
+        self.ping_buffer = ping_buffer
+        self.buffer_size = buffer_size
 
-def limit_file_length(limit=int(10)):
-    command = "sed -i '' '1d' pings.dat"
-    c = command.split()
-    file_len = get_file_length()
-    if (file_len > limit):  
-        result = run(c, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    def __run_bash_cmd(self, cmd):
+        cmd = cmd.split()
+        cp = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        return cp
+
+    def __strip_ping_string(self, ping_string):
+        time_m = re.search(r"time=[^ ]*", ping_string)
+        numeric_ping_m = re.search(r"[0-9]+\.[0-9]+", time_m.group())
+        return(numeric_ping_m.group())
+
+    def __get_ping(self):
+        cp = self.__run_bash_cmd(PingThread.__ping_cmd)
+        ping_string = cp.stdout
+        return float(self.__strip_ping_string(ping_string))
 
 
-thr = Thread(target=get_pings)
-thr.start()
+    def run(self):
+        while True:
+            self.ping_buffer.append(self.__get_ping())
+            if (len(self.ping_buffer) > self.buffer_size):
+                del self.ping_buffer[0]
+            print(self.ping_buffer)
 
-while True:
-    limit_file_length()
+
+ping_buffer = []
+t = PingThread(ping_buffer, 10)
+t.start()
+
+# def get_file_length():
+#     command = "wc -l ./pings.dat"
+#     c = command.split()
+#     result = run(c, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+#     print(int(result.stdout.split()[0]))
+#     return int(result.stdout.split()[0])
+
+# def limit_file_length(limit=int(10)):
+#     command = "sed -i '' '1d' pings.dat"
+#     c = command.split()
+#     file_len = get_file_length()
+#     if (file_len > limit):  
+#         result = run(c, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+
+
+# thr = Thread(target=get_pings)
+# thr.start()
+
+# while True:
+#     limit_file_length()
 
 
 # with open("final.txt") as f:
