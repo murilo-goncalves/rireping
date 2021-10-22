@@ -16,9 +16,19 @@ class PingThread(threading.Thread):
         return cp
 
     def __strip_ping_string(self, ping_string):
+        """ LIDAR COM ESSA PORRA
+        """
         time_m = re.search(r"time=[^ ]*", ping_string)
-        numeric_ping_m = re.search(r"[0-9]+\.[0-9]+", time_m.group())
-        return(numeric_ping_m.group())
+        try:
+            time = time_m.group()
+        except:
+            time = ""
+        numeric_ping_m = re.search(r"[0-9]+\.[0-9]+", time)
+        try:
+            return numeric_ping_m.group()
+        except:
+            return 500
+
 
     def __get_ping(self):
         cp = self.__run_bash_cmd(PingThread.__ping_cmd)
@@ -31,9 +41,10 @@ class PingThread(threading.Thread):
             self.ping_buffer.append(self.__get_ping())
             if (len(self.ping_buffer) > self.buffer_size):
                 del self.ping_buffer[0]
-            print(self.ping_buffer)
 
 if (__name__ == "__main__"):
     ping_buffer = []
-    t = PingThread(ping_buffer, 10)
+    t = PingThread(ping_buffer, 5)
     t.start()
+    while True:
+        print(ping_buffer)
