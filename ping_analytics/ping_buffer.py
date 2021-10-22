@@ -3,7 +3,7 @@ from subprocess import call, run, PIPE
 import re
 
 class PingThread(threading.Thread):
-    __ping_cmd = "ping 151.101.194.167 -c 1"
+    __ping_cmd = "ping 151.101.194.167 -c 1" # ping somewhere in SF
 
     def __init__(self, ping_buffer, buffer_size):
         threading.Thread.__init__(self)
@@ -16,18 +16,14 @@ class PingThread(threading.Thread):
         return cp
 
     def __strip_ping_string(self, ping_string):
-        """ LIDAR COM ESSA PORRA
-        """
         time_m = re.search(r"time=[^ ]*", ping_string)
-        try:
-            time = time_m.group()
-        except:
-            time = ""
-        numeric_ping_m = re.search(r"[0-9]+\.[0-9]+", time)
-        try:
-            return numeric_ping_m.group()
-        except:
-            return 500
+
+        if time_m is None: # ping failed
+            return -1
+ 
+        numeric_ping_m = re.search(r"[0-9]+\.[0-9]+", time_m.group())
+
+        return numeric_ping_m.group()
 
 
     def __get_ping(self):
