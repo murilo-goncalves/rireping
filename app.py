@@ -20,7 +20,7 @@ def stream():
     tp.start()
     def get_latest_ping():
         while True:
-            yield str(ping_buffer[BUFFER_SIZE-1]) + " "
+            yield str(ping_buffer[BUFFER_SIZE-1])
             sleep(1)
 
     return app.response_class(get_latest_ping(), mimetype="text/plain")

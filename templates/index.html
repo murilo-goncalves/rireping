@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <meta http-equiv="refresh" content="1" /> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <title>Rireping</title>
@@ -12,6 +11,7 @@
   <body>
       <div>
         <p>This is the latest output: <span id="output"></span></p>
+        <canvas id="ping"><canvas/>
     <div/>
   </body>
 </html>
@@ -19,16 +19,51 @@
 
 <pre id="output"></pre>
 <script>
-    var output = document.getElementById('output');
+    var ctx = document.getElementById("ping").getContext("2d");
+
+    var data = {
+    labels: Array(20).fill(""),
+    datasets: [{
+        label: "ping",
+        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        }],
+    };
+    
+    var options = {
+    legend: {
+        display: true,
+        position: 'top',
+        labels: {
+        boxWidth: 80,
+        fontColor: 'black'
+        }
+      },
+      scales: {
+        y: {
+            max: 40,
+            min: 0,
+        }
+    }
+    };
+
+    var pingChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+
+    var output  = document.getElementById('output');
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '{{ url_for('stream') }}');
     xhr.send();
 
     setInterval(function() {
-        output.textContent = xhr.responseText;
-    }, 1000);
-
+        output.textContent = xhr.responseText
+        pingChart.data.datasets[0].data.shift()
+        pingChart.data.datasets[0].data.push(parseFloat(xhr.responseText));
+        pingChart.update()
+    }, 300);
 
 </script>
 
